@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | TEGEN-CLOUD v1.0.0</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <h1>TEGEN-CLOUD</h1>
+                    <p class="version">v1.0.0</p>
+                </div>
+            </div>
+            
+            <div class="auth-security-info">
+                <h2>Why Register?</h2>
+                <p>Create your secure evidence vault with these benefits:</p>
+                
+                <div class="benefits">
+                    <div class="benefit">
+                        <i class="fas fa-cloud-upload-alt" style="color: #fe4d35;"></i>
+                        <div>
+                            <h4>Secure Evidence Storage</h4>
+                            <p>AES-GCM encrypted storage for all your digital evidence</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit">
+                        <i class="fas fa-link" style="color: #ff3419;"></i>
+                        <div>
+                            <h4>Cryptographic Integrity Proof</h4>
+                            <p>SHA-256 hash chain proves evidence hasn't been altered</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit">
+                        <i class="fas fa-robot" style="color: #4e4d4d;"></i>
+                        <div>
+                            <h4>AI-Assisted Analysis</h4>
+                            <p>Detect patterns and severity in text evidence</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit">
+                        <i class="fas fa-file-pdf" style="color: #fc6d5a;"></i>
+                        <div>
+                            <h4>Court-Ready Reports</h4>
+                            <p>Generate professional reports with integrity proofs</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="privacy-note">
+                    <i class="fas fa-user-shield"></i>
+                    <div>
+                        <h4>Privacy First Approach</h4>
+                        <p>We store only hashed usernames, not original usernames. Your identity is protected.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-card">
+                <h2>Create Your Secure Account</h2>
+                <p class="auth-subtitle">Start protecting your digital evidence today</p>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash-message {{ category }}">
+                                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <form action="/register" method="POST" class="auth-form">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i> Choose a Username
+                        </label>
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               placeholder="Choose a secure username" 
+                               required
+                               minlength="3"
+                               autocomplete="username">
+                        <small class="help-text">Minimum 3 characters. This will be hashed for storage.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i> Email Address (Optional)
+                        </label>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               placeholder="name@example.com"
+                               autocomplete="email">
+                        <small class="help-text">Optional. Used for important security notifications only.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-key"></i> Create Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Create a strong password" 
+                                   required
+                                   minlength="8"
+                                   autocomplete="new-password">
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="password-strength">
+                            <div class="strength-bar"></div>
+                            <span class="strength-text">Password strength</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm_password">
+                            <i class="fas fa-key"></i> Confirm Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" 
+                                   id="confirm_password" 
+                                   name="confirm_password" 
+                                   placeholder="Re-enter your password" 
+                                   required
+                                   autocomplete="new-password">
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirm_password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="recovery_phrase">
+                            <i class="fas fa-life-ring"></i> Recovery Phrase
+                        </label>
+                        <input type="text" 
+                               id="recovery_phrase" 
+                               name="recovery_phrase" 
+                               placeholder="Create a memorable recovery phrase" 
+                               required
+                               autocomplete="off">
+                        <small class="help-text">
+                            <strong>IMPORTANT:</strong> This is used for account recovery and panic mode. 
+                            Write it down and keep it safe. We cannot recover it for you.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group terms">
+                        <label class="checkbox">
+                            <input type="checkbox" name="terms" id="terms" required>
+                            <span>
+                                I agree to the <a href="#" class="disabled">Terms of Service</a> and 
+                                <a href="#" class="disabled">Privacy Policy</a>. I understand this is an 
+                                evidence preservation tool, not an emergency response service.
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="auth-btn" id="register-btn">
+                        <i class="fas fa-user-plus"></i> Create Secure Account
+                    </button>
+                    
+                    <div class="auth-divider">
+                        <span>Already have an account?</span>
+                    </div>
+                    
+                    <a href="{{ url_for('login') }}" class="auth-btn secondary">
+                        <i class="fas fa-sign-in-alt"></i> Login to Existing Account
+                    </a>
+                    
+                    <div class="auth-links">
+                        <a href="{{ url_for('home') }}">
+                            <i class="fas fa-home"></i> Back to Home
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggleBtn = field.nextElementSibling;
+            const icon = toggleBtn.querySelector('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.querySelector('.strength-bar');
+        const strengthText = document.querySelector('.strength-text');
+        
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            
+            // Complexity checks
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            // Update visual
+            const colors = ['#ff3419', '#fe4d35', '#fc6d5a', '#fa8b7b', '#4e4d4d'];
+            const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            
+            strength = Math.min(strength, 4);
+            strengthBar.style.width = `${(strength + 1) * 20}%`;
+            strengthBar.style.backgroundColor = colors[strength];
+            strengthText.textContent = texts[strength];
+            strengthText.style.color = colors[strength];
+        });
+        
+        // Confirm password validation
+        const confirmInput = document.getElementById('confirm_password');
+        
+        function validatePasswordMatch() {
+            const password = passwordInput.value;
+            const confirm = confirmInput.value;
+            const registerBtn = document.getElementById('register-btn');
+            
+            if (confirm && password !== confirm) {
+                confirmInput.style.borderColor = '#fe4d35';
+                registerBtn.disabled = true;
+                registerBtn.style.opacity = '0.6';
+                registerBtn.title = 'Passwords do not match';
+            } else {
+                confirmInput.style.borderColor = '#4e4d4d';
+                registerBtn.disabled = false;
+                registerBtn.style.opacity = '1';
+                registerBtn.title = '';
+            }
+        }
+        
+        passwordInput.addEventListener('input', validatePasswordMatch);
+        confirmInput.addEventListener('input', validatePasswordMatch);
+        
+        // Auto-hide flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateY(-10px)';
+                    setTimeout(() => message.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TEGEN-CLOUD v1.0.0</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <h1>TEGEN-CLOUD</h1>
+                    <p class="version">v1.0.0</p>
+                </div>
+            </div>
+            
+            <div class="auth-security-info">
+                <h2>Secure Login</h2>
+                <p>Access your encrypted evidence vault with enhanced security</p>
+                
+                <div class="security-features">
+                    <div class="feature">
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <h4>End-to-End Encryption</h4>
+                            <p>Your data is encrypted before reaching our servers</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h4>Cryptographic Integrity</h4>
+                            <p>SHA-256 hash verification for all evidence</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature">
+                        <i class="fas fa-user-secret"></i>
+                        <div>
+                            <h4>Privacy First</h4>
+                            <p>We store minimal personal information</p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-card">
+                <h2>Login to Your Account</h2>
+                <p class="auth-subtitle">Access your secure evidence vault</p>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash-message {{ category }}">
+                                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <form action="/login" method="POST" class="auth-form">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               placeholder="Enter your username" 
+                               required
+                               autocomplete="username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-key"></i> Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Enter your password" 
+                                   required
+                                   autocomplete="current-password">
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="recovery_phrase">
+                            <i class="fas fa-life-ring"></i> Recovery Phrase (Optional)
+                        </label>
+                        <input type="text" 
+                               id="recovery_phrase" 
+                               name="recovery_phrase" 
+                               placeholder="Enter recovery phrase if needed"
+                               autocomplete="off">
+                        <small class="help-text">Only needed for account recovery or panic mode</small>
+                    </div>
+                    
+                    
+                    <button type="submit" class="auth-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login Securely
+                    </button>
+                    
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+                    
+                    <a href="{{ url_for('register') }}" class="auth-btn secondary">
+                        <i class="fas fa-user-plus"></i> Create New Account
+                    </a>
+                    
+                    <div class="auth-links">
+                        <a href="{{ url_for('home') }}">
+                            <i class="fas fa-home"></i> Back to Home
+                        </a>
+                        <a href="#" class="disabled">
+                            <i class="fas fa-question-circle"></i> Forgot Password?
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggleBtn = field.nextElementSibling;
+            const icon = toggleBtn.querySelector('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateY(-10px)';
+                    setTimeout(() => message.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | TEGEN-CLOUD v1.0.0</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <span class="logo-name">TEGEN-CLOUD</span>
+                    <span class="logo-version">v1.0.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="#overview" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                </a>
+                <a href="#evidence" class="nav-link">
+                    <i class="fas fa-file-upload"></i> Evidence
+                </a>
+                <a href="#timeline" class="nav-link">
+                    <i class="fas fa-stream"></i> Timeline
+                </a>
+                <a href="#reports" class="nav-link">
+                    <i class="fas fa-file-pdf"></i> Reports
+                </a>
+                <a href="#settings" class="nav-link">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ username }}</span>
+                    <span class="usercode">{{ user_code }}</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="panic-btn" id="panicBtn" title="Emergency: Disguise Interface">
+                    <i class="fas fa-exclamation-triangle"></i> PANIC
+                </button>
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <!-- Welcome Header -->
+        <header class="dashboard-header">
+            <div class="welcome-section">
+                <h1>
+                    <i class="fas fa-shield-alt" style="color: #fe4d35;"></i>
+                    Welcome, {{ username }}!
+                </h1>
+                <p>Your secure evidence vault is protected with AES-GCM encryption</p>
+            </div>
+            
+            <div class="security-status">
+                <div class="status-card secure">
+                    <i class="fas fa-lock"></i>
+                    <div>
+                        <h3>Vault Status: Secure</h3>
+                        <p>All evidence is encrypted</p>
+                    </div>
+                </div>
+                
+                {% if panic_active %}
+                <div class="status-card warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <h3>Panic Mode: Active</h3>
+                        <p>Interface is disguised</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #dfbcb7;">
+                        <i class="fas fa-file-upload" style="color: #fe4d35;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ evidence_count }}</h3>
+                        <p>Evidence Items</p>
+                        <small>Securely stored & encrypted</small>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #fa8b7b;">
+                        <i class="fas fa-link" style="color: #161515;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ evidence_count * 2 if evidence_count > 0 else 0 }}</h3>
+                        <p>Integrity Blocks</p>
+                        <small>Hash chain verified</small>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #f4f4f4;">
+                        <i class="fas fa-robot" style="color: #4e4d4d;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ evidence_count }}</h3>
+                        <p>AI Analyses</p>
+                        <small>Patterns detected</small>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #fc6d5a;">
+                        <i class="fas fa-file-pdf" style="color: #161515;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>0</h3>
+                        <p>Reports Generated</p>
+                        <small>Court-ready documents</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <section class="main-content">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Quick Actions -->
+                    <div class="card quick-actions">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <a href="#" class="action-btn">
+                                <i class="fas fa-plus-circle"></i>
+                                <div>
+                                    <h4>Upload New Evidence</h4>
+                                    <p>Add screenshots, messages, or files</p>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="action-btn">
+                                <i class="fas fa-stream"></i>
+                                <div>
+                                    <h4>View Timeline</h4>
+                                    <p>Chronological evidence view</p>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="action-btn">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>
+                                    <h4>Generate Report</h4>
+                                    <p>Create court-ready document</p>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="action-btn">
+                                <i class="fas fa-cog"></i>
+                                <div>
+                                    <h4>Security Settings</h4>
+                                    <p>Configure encryption & panic mode</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card recent-activity">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if evidence_count > 0 %}
+                                {% for evidence in recent_evidence %}
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        {% if evidence[1] == 'image' %}
+                                            <i class="fas fa-image"></i>
+                                        {% elif evidence[1] == 'text' %}
+                                            <i class="fas fa-file-alt"></i>
+                                        {% elif evidence[1] == 'pdf' %}
+                                            <i class="fas fa-file-pdf"></i>
+                                        {% else %}
+                                            <i class="fas fa-file"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="activity-details">
+                                        <h4>Evidence {{ evidence[0][:8] }}...</h4>
+                                        <p>Uploaded {{ evidence[2] }}</p>
+                                        {% if evidence[3] %}
+                                        <span class="severity-badge severity-{{ evidence[3] }}">
+                                            Severity: {{ evidence[3] }}/5
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No evidence uploaded yet</p>
+                                    <a href="#" class="btn-small">Upload First Evidence</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Integrity Status -->
+                    <div class="card integrity-status">
+                        <div class="card-header">
+                            <h3><i class="fas fa-link"></i> Integrity Ledger Status</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ledger-visual">
+                                <div class="ledger-chain">
+                                    {% for i in range(evidence_count if evidence_count <= 5 else 5) %}
+                                    <div class="ledger-block">
+                                        <div class="block-icon">
+                                            <i class="fas fa-cube"></i>
+                                        </div>
+                                        <div class="block-info">
+                                            <h4>Block {{ i + 1 }}</h4>
+                                            <p>Hash verified ✓</p>
+                                        </div>
+                                    </div>
+                                    {% if i < (evidence_count - 1 if evidence_count <= 5 else 4) %}
+                                    <div class="chain-link">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if evidence_count == 0 %}
+                                    <div class="empty-ledger">
+                                        <i class="fas fa-link"></i>
+                                        <p>No integrity blocks yet</p>
+                                        <small>Upload evidence to start the chain</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="integrity-summary">
+                                <div class="summary-item">
+                                    <i class="fas fa-hashtag"></i>
+                                    <div>
+                                        <h4>Chain Length</h4>
+                                        <p>{{ evidence_count }} blocks</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="summary-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <h4>Verification</h4>
+                                        <p>All blocks verified</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="summary-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <div>
+                                        <h4>Tamper Evidence</h4>
+                                        <p>Active</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Tips -->
+                    <div class="card security-tips">
+                        <div class="card-header">
+                            <h3><i class="fas fa-lightbulb"></i> Security Tips</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="tip">
+                                <i class="fas fa-mobile-alt"></i>
+                                <div>
+                                    <h4>Use on Private Devices</h4>
+                                    <p>Always access from trusted, private devices</p>
+                                </div>
+                            </div>
+                            
+                            <div class="tip">
+                                <i class="fas fa-redo"></i>
+                                <div>
+                                    <h4>Regular Backups</h4>
+                                    <p>Export and backup reports regularly</p>
+                                </div>
+                            </div>
+                            
+                            <div class="tip">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <h4>Panic Mode Practice</h4>
+                                    <p>Know how to activate panic mode quickly</p>
+                                </div>
+                            </div>
+                            
+                            <div class="tip">
+                                <i class="fas fa-user-secret"></i>
+                                <div>
+                                    <h4>Strong Passwords</h4>
+                                    <p>Use unique, strong passwords for all accounts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Coming Soon -->
+                    <div class="card coming-soon">
+                        <div class="card-header">
+                            <h3><i class="fas fa-rocket"></i> Coming Soon in v1.1.0</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="feature-preview">
+                                <i class="fas fa-language"></i>
+                                <div>
+                                    <h4>Amharic Language Support</h4>
+                                    <p>Full interface translation</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-preview">
+                                <i class="fas fa-fingerprint"></i>
+                                <div>
+                                    <h4>Digital Signatures</h4>
+                                    <p>Advanced evidence authentication</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-preview">
+                                <i class="fas fa-brain"></i>
+                                <div>
+                                    <h4>Enhanced AI Models</h4>
+                                    <p>Better pattern detection</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Development Note -->
+        <section class="dev-note">
+            <div class="note-content">
+                <i class="fas fa-code"></i>
+                <div>
+                    <h3>Development in Progress</h3>
+                    <p>More features coming soon... This is the dashboard for TEGEN-CLOUD v1.0.0. 
+                    Evidence upload, AI analysis, and report generation features are under active development.</p>
+                    <a href="{{ url_for('home') }}" class="home-link">
+                        <i class="fas fa-home"></i> Go to Home
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>TEGEN-CLOUD v1.0.0</strong> | Secure Guidance Cloud
+                </p>
+                <p class="footer-sub">
+                    Cryptographic Integrity Ledger • AES-GCM Encryption • Survivor Safety First
+                </p>
+            </div>
+            
+            <div class="footer-right">
+                <div class="encryption-status">
+                    <span class="status-dot active"></span>
+                    <span>End-to-End Encryption: Active</span>
+                </div>
+                <p class="copyright">© 2024 TEGEN-CLOUD. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Panic Mode Modal -->
+    <div class="panic-modal" id="panicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Activate Panic Mode?</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="panic-warning">
+                    <i class="fas fa-user-secret"></i>
+                    <div>
+                        <h3>This will immediately:</h3>
+                        <ul>
+                            <li>Disguise the interface as a calculator</li>
+                            <li>Hide all evidence and sensitive content</li>
+                            <li>Require recovery phrase to restore access</li>
+                            <li>Log this action for security purposes</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="panic-form">
+                    <div class="form-group">
+                        <label for="panicRecovery">
+                            <i class="fas fa-life-ring"></i> Enter Recovery Phrase
+                        </label>
+                        <input type="text" 
+                               id="panicRecovery" 
+                               placeholder="Enter recovery phrase to confirm"
+                               autocomplete="off">
+                        <small>This confirms you understand the consequences</small>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="btn-secondary" id="cancelPanic">Cancel</button>
+                        <button class="btn-danger" id="confirmPanic">
+                            <i class="fas fa-exclamation-triangle"></i> Activate Panic Mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

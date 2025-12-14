@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEGEN-CLOUD v1.0.0 | Secure Guidance Cloud for TFGBV Evidence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div class="logo-text">
+                    <span class="logo-name">TEGEN-CLOUD</span>
+                    <span class="logo-version">v1.0.0</span>
+                </div>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#developers" class="nav-link">Developers</a>
+                <a href="{{ url_for('login') }}" class="nav-link login-btn">Login</a>
+                <a href="{{ url_for('register') }}" class="nav-link get-started-btn">Get Started</a>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="tagline-badge">
+                    <span>Secure Guidance Cloud</span>
+                </div>
+                <h1 class="hero-title">Protecting Digital Evidence Against Technology-Facilitated Gender-Based Violence</h1>
+                <p class="hero-description">
+                    A secure, AI-assisted platform that transforms fragile digital evidence into verified, 
+                    court-ready records with cryptographic integrity and survivor safety at its core.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('register') }}" class="btn-primary">
+                        <i class="fas fa-shield-alt"></i> Start Securing Evidence
+                    </a>
+                    <a href="#features" class="btn-secondary">
+                        <i class="fas fa-play-circle"></i> See How It Works
+                    </a>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>End-to-end encrypted • AES-GCM • SHA-256 Integrity</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="card-header">
+                        <div class="card-dots">
+                            <span style="background-color: #fe4d35;"></span>
+                            <span style="background-color: #ff3419;"></span>
+                            <span style="background-color: #4e4d4d;"></span>
+                        </div>
+                        <span class="card-title">Secure Evidence Dashboard</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="timeline-visual">
+                            <div class="timeline-item">
+                                <div class="timeline-marker" style="background-color: #fe4d35;"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-title">Evidence Uploaded</span>
+                                    <span class="timeline-time">2 hours ago • Verified ✓</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker" style="background-color: #ff3419;"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-title">AI Analysis Complete</span>
+                                    <span class="timeline-time">1 hour ago • Severity: Medium</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker" style="background-color: #4e4d4d;"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-title">Report Generated</span>
+                                    <span class="timeline-time">30 minutes ago • Court-ready</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="integrity-badge">
+                            <i class="fas fa-link"></i>
+                            <span>Integrity Chain: 3 blocks • Tamper-evident</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">What is TEGEN-CLOUD?</h2>
+                <p class="section-subtitle">
+                    <em>"Tegen (ተገን)"</em> represents guidance, reference, and protection—reflecting our role as a trusted digital support system
+                </p>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon" style="background-color: #f4f4f4;">
+                        <i class="fas fa-exclamation-triangle" style="color: #fe4d35;"></i>
+                    </div>
+                    <h3>The Problem</h3>
+                    <p>
+                        TFGBV through digital channels is increasing. Survivors face evidence deletion, manipulation, 
+                        unsafe storage, and lack of authentication mechanisms. Current tools fail local realities.
+                    </p>
+                </div>
+                
+                <div class="about-card">
+                    <div class="about-icon" style="background-color: #dfbcb7;">
+                        <i class="fas fa-shield-alt" style="color: #161515;"></i>
+                    </div>
+                    <h3>Our Solution</h3>
+                    <p>
+                        A secure evidence guidance system with encrypted storage, cryptographic integrity proof, 
+                        AI-assisted analysis, and survivor safety features—designed for Ethiopian context.
+                    </p>
+                </div>
+                
+                <div class="about-card">
+                    <div class="about-icon" style="background-color: #fa8b7b;">
+                        <i class="fas fa-balance-scale" style="color: #161515;"></i>
+                    </div>
+                    <h3>Impact</h3>
+                    <p>
+                        Strengthens digital justice by providing court-ready evidence with verifiable integrity, 
+                        supporting NGOs, legal advocates, and survivors in seeking justice.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Core Features (v1.0.0)</h2>
+                <p class="section-subtitle">Reliable, secure, and practical—built for real-world deployment</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-number" style="background-color: #fe4d35;">01</div>
+                    <h3>Secure Evidence Upload</h3>
+                    <p>Upload screenshots, chats, audio, PDFs with automatic timestamp and encryption</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Mobile-friendly interface</li>
+                        <li><i class="fas fa-check"></i> Multiple file types</li>
+                        <li><i class="fas fa-check"></i> Automatic metadata capture</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number" style="background-color: #ff3419;">02</div>
+                    <h3>Cryptographic Integrity Ledger</h3>
+                    <p>Append-only hash chain proving evidence hasn't been altered since upload</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> SHA-256 hash chaining</li>
+                        <li><i class="fas fa-check"></i> Tamper-evident design</li>
+                        <li><i class="fas fa-check"></i> No blockchain dependency</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number" style="background-color: #4e4d4d;">03</div>
+                    <h3>AI-Assisted Analysis</h3>
+                    <p>Detects harassment, threats, and coercive language with severity scoring</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Human-readable explanations</li>
+                        <li><i class="fas fa-check"></i> Severity scoring (1-5)</li>
+                        <li><i class="fas fa-check"></i> Assistant role only</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number" style="background-color: #fc6d5a;">04</div>
+                    <h3>Evidence Timeline</h3>
+                    <p>Chronological visualization showing progression and context of abuse</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Visual timeline</li>
+                        <li><i class="fas fa-check"></i> Integrity status display</li>
+                        <li><i class="fas fa-check"></i> Context understanding</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number" style="background-color: #818080;">05</div>
+                    <h3>Court-Ready Reports</h3>
+                    <p>Generate structured reports with hash proofs for legal proceedings</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Downloadable PDFs</li>
+                        <li><i class="fas fa-check"></i> Cryptographic proofs</li>
+                        <li><i class="fas fa-check"></i> Professional formatting</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number" style="background-color: #fa8b7b;">06</div>
+                    <h3>Panic Mode</h3>
+                    <p>One-click disguised interface to instantly hide sensitive content</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Instant activation</li>
+                        <li><i class="fas fa-check"></i> Neutral interface</li>
+                        <li><i class="fas fa-check"></i> Survivor safety first</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Developers Section -->
+    <section class="developers-section" id="developers">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Meet Our Developers</h2>
+                <p class="section-subtitle">The team behind TEGEN-CLOUD's secure architecture</p>
+            </div>
+            
+            <div class="developers-grid">
+                <!-- Developer 1 -->
+                <div class="developer-card">
+                    <div class="developer-portrait">
+                        <div class="portrait-placeholder" style="background: linear-gradient(135deg, #fe4d35, #ff3419);">
+                        <img src="{{ url_for('static', filename='images/haile.jpg') }}" alt="Paulos Beirhun" style="width: 150px; height: 150px; border-radius: 50%;">
+                        </div>
+                    </div>
+                    <div class="developer-info">
+                        <h3 class="developer-name">Haileab Mulugeta</h3>
+                        <p class="developer-title">Full Stack Developer & Quantum Cryptographer</p>
+                        <blockquote class="developer-quote">
+                            "Security isn't a feature—it's the foundation of trust in digital justice."
+                        </blockquote>
+                        <div class="developer-role">
+                            <i class="fas fa-user-tag"></i>
+                            <span>Role: Frontend Developer & Encryption Specialist</span>
+                        </div>
+                        <div class="developer-skills">
+                            <h4>Skills:</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">HTML/CSS</span>
+                                <span class="skill-tag">JavaScript</span>
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">Flask</span>
+                                <span class="skill-tag">Node.js</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Developer 2 -->
+                <div class="developer-card">
+                    <div class="developer-portrait">
+                        <div class="portrait-placeholder" style="background: linear-gradient(135deg, #161515, #4e4d4d);">
+                            <img src="{{ url_for('static', filename='images/paul.jpg') }}" alt="Paulos Beirhun" style="width: 150px; height: 150px; border-radius: 50%;">
+                        </div>
+                    </div>
+                    <div class="developer-info">
+                        <h3 class="developer-name">Paulos Beirhun</h3>
+                        <p class="developer-title">Full Stack Developer & Cyber Security Learner</p>
+                        <blockquote class="developer-quote">
+                            "Building systems that protect people requires both technical rigor and human empathy."
+                        </blockquote>
+                        <div class="developer-role">
+                            <i class="fas fa-user-tag"></i>
+                            <span>Role: Backend Developer & System Security Architect</span>
+                        </div>
+                        <div class="developer-skills">
+                            <h4>Skills:</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">Django</span>
+                                <span class="skill-tag">Flask</span>
+                                <span class="skill-tag">FastAPI</span>
+                                <span class="skill-tag">PHP</span>
+                                <span class="skill-tag">Node.js</span>
+                                <span class="skill-tag">React</span>
+                                <span class="skill-tag">System Security</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                        <div>
+                            <h3>TEGEN-CLOUD</h3>
+                            <p class="footer-version">v1.0.0</p>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">
+                        A Secure Guidance Cloud for Technology-Facilitated Gender-Based Violence Evidence
+                    </p>
+                    <div class="footer-tech">
+                        <span class="tech-badge">AES-GCM Encryption</span>
+                        <span class="tech-badge">SHA-256 Integrity</span>
+                        <span class="tech-badge">Flask Backend</span>
+                        <span class="tech-badge">SQLite Database</span>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="link-column">
+                        <h4>Platform</h4>
+                        <a href="#home">Home</a>
+                        <a href="#about">About</a>
+                        <a href="#features">Features</a>
+                        <a href="#developers">Developers</a>
+                    </div>
+                    
+                    <div class="link-column">
+                        <h4>Access</h4>
+                        <a href="{{ url_for('login') }}">Login</a>
+                        <a href="{{ url_for('register') }}">Register</a>
+                        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a href="#features">How It Works</a>
+                    </div>
+                    
+                    <div class="link-column">
+                        <h4>Security</h4>
+                        <a href="#" class="disabled">Encryption Whitepaper</a>
+                        <a href="#" class="disabled">Privacy Policy</a>
+                        <a href="#" class="disabled">Integrity Proof</a>
+                        <a href="#" class="disabled">Safety Guidelines</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-disclaimer">
+                    <p>
+                        <strong>Important:</strong> TEGEN-CLOUD is an evidence preservation tool, not emergency response. 
+                        If you are in immediate danger, contact local authorities or support services.
+                    </p>
+                    <p class="copyright">
+                        © 2025 TEGEN-CLOUD v1.0.0. All rights reserved. | 
+                        Built with security and survivor safety as core principles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
