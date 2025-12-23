@@ -1,10 +1,10 @@
-from flask import Flask, render_template, redirect, session, request, flash, url_for, send_from_directory
+from flask import Flask, render_template, redirect, session, request, flash, url_for, send_from_directory, send_file, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3
 import uuid
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 
 app = Flask(__name__)
@@ -111,6 +111,31 @@ def init_db():
         cursor.execute('ALTER TABLE users ADD COLUMN notifications_enabled INTEGER DEFAULT 1')
     except sqlite3.OperationalError:
         pass
+    
+    # Add uuid_filename and original_filename columns if they don't exist
+    try:
+        cursor.execute('ALTER TABLE evidence ADD COLUMN uuid_filename TEXT')
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute('ALTER TABLE evidence ADD COLUMN original_filename TEXT')
+    except sqlite3.OperationalError:
+        pass
+    
+    # Create file_access_logs table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS file_access_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_code TEXT NOT NULL,
+            file_id TEXT NOT NULL,
+            access_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            access_type TEXT,
+            ip_address TEXT,
+            user_agent TEXT,
+            success INTEGER DEFAULT 0
+        )
+    ''')
     
     conn.commit()
     conn.close()
@@ -337,12 +362,12 @@ def upload():
         
         cursor.execute('''
             INSERT INTO evidence 
-            (evidence_id, user_code, filename, stored_filename, file_type, file_size, 
-             evidence_name, evidence_type, observation, upload_timestamp)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (evidence_id, user_code, filename, stored_filename, uuid_filename, original_filename, 
+             file_type, file_size, evidence_name, evidence_type, observation, upload_timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (evidence_id, session['user_code'], secure_filename(file.filename), 
-              unique_filename, db_file_type, file_size, evidence_name, 
-              evidence_type, observation, datetime.now()))
+              unique_filename, unique_filename, file.filename, db_file_type, file_size, 
+              evidence_name, evidence_type, observation, datetime.now()))
         
         conn.commit()
         conn.close()
@@ -504,6 +529,231 @@ def update_notifications():
     
     flash('Notification preferences updated!', 'success')
     return redirect('/profile')
+
+@app.route('/generate-report')
+def generate_report():
+    if 'user_id' not in session:
+        flash('Please login to generate reports', 'error')
+        return redirect('/login')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Get filter parameters
+    filter_type = request.args.get('type', 'all')
+    filter_date_from = request.args.get('date_from', '')
+    filter_date_to = request.args.get('date_to', '')
+    search_query = request.args.get('search', '').strip()
+    export_format = request.args.get('export', '')
+    
+    # Build query
+    query = '''SELECT evidence_id, evidence_name, evidence_type, file_type, 
+               upload_timestamp, file_size, observation, filename
+               FROM evidence WHERE user_code = ?'''
+    params = [session['user_code']]
+    
+    if filter_type != 'all':
+        query += ' AND evidence_type = ?'
+        params.append(filter_type)
+    
+    if filter_date_from:
+        query += ' AND DATE(upload_timestamp) >= ?'
+        params.append(filter_date_from)
+    
+    if filter_date_to:
+        query += ' AND DATE(upload_timestamp) <= ?'
+        params.append(filter_date_to)
+    
+    if search_query:
+        query += ' AND (evidence_name LIKE ? OR observation LIKE ?)'
+        params.append(f'%{search_query}%')
+        params.append(f'%{search_query}%')
+    
+    query += ' ORDER BY upload_timestamp ASC'
+    
+    cursor.execute(query, params)
+    evidence_list = cursor.fetchall()
+    
+    # Get user info for report header
+    cursor.execute(
+        'SELECT email FROM users WHERE user_code = ?',
+        (session['user_code'],)
+    )
+    user = cursor.fetchone()
+    
+    conn.close()
+    
+    # Export as text
+    if export_format == 'text':
+        response_text = f"EVIDENCE REPORT\n"
+        response_text += f"{'=' * 50}\n"
+        response_text += f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        response_text += f"User: {session.get('username')}\n"
+        response_text += f"Total Items: {len(evidence_list)}\n"
+        response_text += f"{'=' * 50}\n\n"
+        
+        for idx, ev in enumerate(evidence_list, 1):
+            response_text += f"\n[{idx}] {ev[1]}\n"
+            response_text += f"    Type: {ev[2]} ({ev[3]})\n"
+            response_text += f"    Uploaded: {ev[4]}\n"
+            response_text += f"    Size: {format_file_size(ev[5])}\n"
+            if ev[6]:
+                response_text += f"    Observation: {ev[6]}\n"
+            response_text += f"    Evidence ID: {ev[0]}\n"
+            response_text += "-" * 50 + "\n"
+        
+        from flask import Response
+        return Response(response_text, mimetype='text/plain',
+                       headers={'Content-Disposition': 'attachment; filename=evidence_report.txt'})
+    
+    return render_template('main/report.html',
+                         username=session.get('username'),
+                         user_code=session.get('user_code'),
+                         user=user,
+                         evidence_list=evidence_list,
+                         filter_type=filter_type,
+                         filter_date_from=filter_date_from,
+                         filter_date_to=filter_date_to,
+                         search_query=search_query)
+
+@app.route('/view-file/<file_id>', methods=['GET', 'POST'])
+def view_file(file_id):
+    if 'user_id' not in session:
+        flash('Please login to view files', 'error')
+        return redirect('/login')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Get file information
+    cursor.execute('''
+        SELECT evidence_id, stored_filename, file_type, filename, user_code, evidence_name
+        FROM evidence WHERE evidence_id = ? AND user_code = ?
+    ''', (file_id, session['user_code']))
+    
+    file_info = cursor.fetchone()
+    
+    if not file_info:
+        # Log failed access attempt
+        cursor.execute('''
+            INSERT INTO file_access_logs 
+            (user_code, file_id, access_type, ip_address, user_agent, success)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (session['user_code'], file_id, 'view', 
+              request.remote_addr, request.headers.get('User-Agent', ''), 0))
+        conn.commit()
+        conn.close()
+        flash('File not found', 'error')
+        return redirect('/observations')
+    
+    # Check if password verification is needed
+    session_key = f'file_verified_{file_id}'
+    verification_time_key = f'file_verified_time_{file_id}'
+    
+    # Check if already verified within last 15 minutes
+    if session_key in session and verification_time_key in session:
+        verified_time = datetime.fromisoformat(session[verification_time_key])
+        if datetime.now() - verified_time < timedelta(minutes=15):
+            # Already verified, serve file
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], 
+                                    session['user_code'], 
+                                    file_info['stored_filename'])
+            
+            if not os.path.exists(file_path):
+                flash('File not found on server', 'error')
+                conn.close()
+                return redirect('/observations')
+            
+            # Log successful access
+            cursor.execute('''
+                INSERT INTO file_access_logs 
+                (user_code, file_id, access_type, ip_address, user_agent, success)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (session['user_code'], file_id, 'view', 
+                  request.remote_addr, request.headers.get('User-Agent', ''), 1))
+            conn.commit()
+            conn.close()
+            
+            # Serve file
+            return send_file(file_path, 
+                           as_attachment=False,
+                           download_name=file_info['filename'],
+                           mimetype='application/pdf' if file_info['file_type'] == 'pdf' else 'image/jpeg')
+    
+    # Password verification required
+    if request.method == 'POST':
+        password = request.form.get('password', '').strip()
+        
+        if not password:
+            flash('Password is required', 'error')
+            conn.close()
+            return render_template('main/view_file.html',
+                                 file_id=file_id,
+                                 file_name=file_info['evidence_name'],
+                                 username=session.get('username'),
+                                 user_code=session.get('user_code'))
+        
+        # Verify password against user's stored password hash
+        cursor.execute(
+            'SELECT password_hash FROM users WHERE user_code = ?',
+            (session['user_code'],)
+        )
+        user = cursor.fetchone()
+        
+        if user and check_password_hash(user['password_hash'], password):
+            # Password correct - set session verification
+            session[session_key] = True
+            session[verification_time_key] = datetime.now().isoformat()
+            
+            # Log successful verification
+            cursor.execute('''
+                INSERT INTO file_access_logs 
+                (user_code, file_id, access_type, ip_address, user_agent, success)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (session['user_code'], file_id, 'view', 
+                  request.remote_addr, request.headers.get('User-Agent', ''), 1))
+            conn.commit()
+            conn.close()
+            
+            # Serve file
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], 
+                                    session['user_code'], 
+                                    file_info['stored_filename'])
+            
+            if not os.path.exists(file_path):
+                flash('File not found on server', 'error')
+                return redirect('/observations')
+            
+            return send_file(file_path, 
+                           as_attachment=False,
+                           download_name=file_info['filename'],
+                           mimetype='application/pdf' if file_info['file_type'] == 'pdf' else 'image/jpeg')
+        else:
+            # Password incorrect - log failed attempt
+            cursor.execute('''
+                INSERT INTO file_access_logs 
+                (user_code, file_id, access_type, ip_address, user_agent, success)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (session['user_code'], file_id, 'view', 
+                  request.remote_addr, request.headers.get('User-Agent', ''), 0))
+            conn.commit()
+            conn.close()
+            
+            flash('Incorrect password', 'error')
+            return render_template('main/view_file.html',
+                                 file_id=file_id,
+                                 file_name=file_info['evidence_name'],
+                                 username=session.get('username'),
+                                 user_code=session.get('user_code'))
+    
+    conn.close()
+    
+    # Show password verification form
+    return render_template('main/view_file.html',
+                         file_id=file_id,
+                         file_name=file_info['evidence_name'],
+                         username=session.get('username'),
+                         user_code=session.get('user_code'))
 
 @app.route('/logout')
 def logout():

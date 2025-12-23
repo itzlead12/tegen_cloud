@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidence Report | TEGEN-CLOUD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <style>
+        .report-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .report-filters {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #161515;
+            font-size: 0.875rem;
+        }
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        .btn-filter {
+            background: #fe4d35;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .btn-export {
+            background: #4e4d4d;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        .btn-print {
+            background: #161515;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        .report-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .report-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px solid #fe4d35;
+        }
+        .report-header h1 {
+            color: #161515;
+            margin-bottom: 0.5rem;
+        }
+        .report-meta {
+            color: #818080;
+            font-size: 0.875rem;
+        }
+        .report-item {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .report-item:last-child {
+            border-bottom: none;
+        }
+        .report-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .report-item-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #161515;
+        }
+        .report-item-id {
+            font-size: 0.75rem;
+            color: #818080;
+            font-family: monospace;
+        }
+        .report-item-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-label {
+            font-size: 0.75rem;
+            color: #818080;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .detail-value {
+            color: #161515;
+            font-weight: 500;
+        }
+        .observation-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 3px solid #fe4d35;
+        }
+        .observation-box strong {
+            color: #161515;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .observation-box p {
+            color: #4e4d4d;
+            margin: 0;
+            font-style: italic;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #818080;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #e0e0e0;
+        }
+        @media print {
+            .dashboard-nav,
+            .report-filters,
+            .btn-print,
+            .btn-export,
+            .btn-filter {
+                display: none;
+            }
+            .report-container {
+                margin: 0;
+                padding: 0;
+            }
+            .report-content {
+                box-shadow: none;
+                padding: 1rem;
+            }
+            .report-item {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <span class="logo-name">TEGEN-CLOUD</span>
+                    <span class="logo-version">v1.0.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{{ url_for('upload') }}" class="nav-link">
+                    <i class="fas fa-file-upload"></i> Upload
+                </a>
+                <a href="{{ url_for('observations') }}" class="nav-link">
+                    <i class="fas fa-list"></i> Observations
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <i class="fas fa-cog"></i> Profile
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ username }}</span>
+                    <span class="usercode">{{ user_code }}</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <div class="report-container">
+            <!-- Filters -->
+            <div class="report-filters">
+                <form method="GET" action="{{ url_for('generate_report') }}" id="filterForm">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label for="type">Evidence Type</label>
+                            <select id="type" name="type">
+                                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Types</option>
+                                <option value="screenshot" {% if filter_type == 'screenshot' %}selected{% endif %}>Screenshot/Image</option>
+                                <option value="document" {% if filter_type == 'document' %}selected{% endif %}>PDF Document</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="date_from">From Date</label>
+                            <input type="date" id="date_from" name="date_from" value="{{ filter_date_from }}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="date_to">To Date</label>
+                            <input type="date" id="date_to" name="date_to" value="{{ filter_date_to }}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="search">Search Observations</label>
+                            <input type="text" id="search" name="search" placeholder="Search..." value="{{ search_query }}">
+                        </div>
+                        <div class="filter-group">
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <a href="{{ url_for('generate_report') }}" class="btn-export">
+                                <i class="fas fa-redo"></i> Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Report Content -->
+            <div class="report-content">
+                <div class="report-header">
+                    <h1><i class="fas fa-file-alt" style="color: #fe4d35;"></i> Evidence Report</h1>
+                    <div class="report-meta">
+                        <p><strong>Generated:</strong> <span id="report-date"></span></p>
+                        <p><strong>User:</strong> {{ username }} ({{ user_code }})</p>
+                        <p><strong>Total Items:</strong> {{ evidence_list|length }}</p>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="window.print()" class="btn-print">
+                            <i class="fas fa-print"></i> Print Report
+                        </button>
+                        <a href="{{ url_for('generate_report', type=filter_type, date_from=filter_date_from, date_to=filter_date_to, search=search_query, export='text') }}" class="btn-export">
+                            <i class="fas fa-download"></i> Export as Text
+                        </a>
+                    </div>
+                </div>
+
+                {% if evidence_list %}
+                    {% for evidence in evidence_list %}
+                    <div class="report-item">
+                        <div class="report-item-header">
+                            <div>
+                                <div class="report-item-title">{{ evidence[1] }}</div>
+                                <div class="report-item-id">ID: {{ evidence[0] }}</div>
+                            </div>
+                        </div>
+                        <div class="report-item-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Upload Date & Time</span>
+                                <span class="detail-value">{{ evidence[4] }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Evidence Type</span>
+                                <span class="detail-value">{{ evidence[2]|title }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">File Type</span>
+                                <span class="detail-value">{{ evidence[3]|upper }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">File Size</span>
+                                <span class="detail-value">
+                                    {% if evidence[5] %}
+                                        {% if evidence[5] < 1024 %}
+                                            {{ evidence[5] }} B
+                                        {% elif evidence[5] < 1024 * 1024 %}
+                                            {{ "%.2f"|format(evidence[5] / 1024) }} KB
+                                        {% else %}
+                                            {{ "%.2f"|format(evidence[5] / (1024 * 1024)) }} MB
+                                        {% endif %}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% if evidence[6] %}
+                        <div class="observation-box">
+                            <strong>Observation / Reason for Upload:</strong>
+                            <p>{{ evidence[6] }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No evidence found</h3>
+                        <p>{% if filter_type != 'all' or filter_date_from or filter_date_to or search_query %}Try adjusting your filters{% else %}Upload evidence to generate a report{% endif %}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Add current date/time to report meta
+        document.addEventListener('DOMContentLoaded', function() {
+            const metaElements = document.querySelectorAll('.report-meta p');
+            if (metaElements.length > 0) {
+                const now = new Date();
+                const dateStr = now.toISOString().slice(0, 19).replace('T', ' ');
+                // Update the generated date if it shows placeholder
+                metaElements[0].textContent = 'Generated: ' + dateStr;
+            }
+        });
+    </script>
+</body>
+</html>
+

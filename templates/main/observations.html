@@ -275,11 +275,16 @@
 
             <!-- Timeline -->
             <div class="timeline">
-                <div class="timeline-header">
-                    <h2><i class="fas fa-list" style="color: #fe4d35;"></i> Evidence Timeline</h2>
-                    <p style="color: #818080; margin-top: 0.5rem;">
-                        {{ observations|length }} observation{{ 's' if observations|length != 1 else '' }} found
-                    </p>
+                <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2><i class="fas fa-list" style="color: #fe4d35;"></i> Evidence Timeline</h2>
+                        <p style="color: #818080; margin-top: 0.5rem;">
+                            {{ observations|length }} observation{{ 's' if observations|length != 1 else '' }} found
+                        </p>
+                    </div>
+                    <a href="{{ url_for('generate_report') }}" class="btn-filter" style="text-decoration: none; display: inline-block;">
+                        <i class="fas fa-file-alt"></i> Generate Report
+                    </a>
                 </div>
 
                 {% if observations %}
@@ -293,37 +298,46 @@
                             {% endif %}
                         </div>
                         <div class="timeline-content">
-                            <h3>{{ obs[1] }}</h3>
-                            <span class="evidence-type-badge {{ obs[2] }}">
-                                <i class="fas fa-tag"></i> {{ obs[2]|title }}
-                            </span>
-                            <div class="timeline-meta">
-                                <span>
-                                    <i class="fas fa-clock"></i> {{ obs[4] }}
-                                </span>
-                                <span>
-                                    <i class="fas fa-hdd"></i> 
-                                    {% if obs[5] %}
-                                        {% if obs[5] < 1024 %}
-                                            {{ obs[5] }} B
-                                        {% elif obs[5] < 1024 * 1024 %}
-                                            {{ "%.2f"|format(obs[5] / 1024) }} KB
-                                        {% else %}
-                                            {{ "%.2f"|format(obs[5] / (1024 * 1024)) }} MB
-                                        {% endif %}
-                                    {% else %}
-                                        N/A
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <h3>{{ obs[1] }}</h3>
+                                    <span class="evidence-type-badge {{ obs[2] }}">
+                                        <i class="fas fa-tag"></i> {{ obs[2]|title }}
+                                    </span>
+                                    <div class="timeline-meta">
+                                        <span>
+                                            <i class="fas fa-clock"></i> {{ obs[4] }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-hdd"></i> 
+                                            {% if obs[5] %}
+                                                {% if obs[5] < 1024 %}
+                                                    {{ obs[5] }} B
+                                                {% elif obs[5] < 1024 * 1024 %}
+                                                    {{ "%.2f"|format(obs[5] / 1024) }} KB
+                                                {% else %}
+                                                    {{ "%.2f"|format(obs[5] / (1024 * 1024)) }} MB
+                                                {% endif %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-fingerprint"></i> {{ obs[0][:12] }}...
+                                        </span>
+                                    </div>
+                                    {% if obs[6] %}
+                                    <div class="observation-text">
+                                        <i class="fas fa-comment"></i> {{ obs[6] }}
+                                    </div>
                                     {% endif %}
-                                </span>
-                                <span>
-                                    <i class="fas fa-fingerprint"></i> {{ obs[0][:12] }}...
-                                </span>
+                                </div>
+                                <div style="margin-left: 1rem;">
+                                    <a href="{{ url_for('view_file', file_id=obs[0]) }}" class="btn-view" style="background: #fe4d35; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600; display: inline-block;">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </div>
                             </div>
-                            {% if obs[6] %}
-                            <div class="observation-text">
-                                <i class="fas fa-comment"></i> {{ obs[6] }}
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}

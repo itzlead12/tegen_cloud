@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View File | TEGEN-CLOUD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <style>
+        .view-file-container {
+            max-width: 500px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        .view-file-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .view-file-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .view-file-header h2 {
+            color: #161515;
+            margin-bottom: 0.5rem;
+        }
+        .view-file-header p {
+            color: #818080;
+            font-size: 0.875rem;
+        }
+        .security-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: #fff5f4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #fe4d35;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #161515;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #fe4d35;
+        }
+        .btn-primary {
+            background: #fe4d35;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: #ff3419;
+        }
+        .btn-secondary {
+            background: #f4f4f4;
+            color: #161515;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .security-note {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border-left: 3px solid #fe4d35;
+            font-size: 0.875rem;
+            color: #4e4d4d;
+        }
+        .security-note i {
+            color: #fe4d35;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <span class="logo-name">TEGEN-CLOUD</span>
+                    <span class="logo-version">v1.0.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{{ url_for('upload') }}" class="nav-link">
+                    <i class="fas fa-file-upload"></i> Upload
+                </a>
+                <a href="{{ url_for('observations') }}" class="nav-link">
+                    <i class="fas fa-list"></i> Observations
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <i class="fas fa-cog"></i> Profile
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ username }}</span>
+                    <span class="usercode">{{ user_code }}</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <div class="view-file-container">
+            <div class="view-file-card">
+                <div class="view-file-header">
+                    <div class="security-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2>Password Required</h2>
+                    <p>Enter your login password to view this file</p>
+                    <p style="font-weight: 600; color: #161515; margin-top: 0.5rem;">{{ file_name }}</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; background: {% if category == 'error' %}#fee; color: #c33;{% else %}#efe; color: #3c3;{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('view_file', file_id=file_id) }}">
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-key"></i> Login Password
+                        </label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Enter your login password" autofocus>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-unlock"></i> Verify & View File
+                    </button>
+                </form>
+
+                <a href="{{ url_for('observations') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Observations
+                </a>
+
+                <div class="security-note">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Security Note:</strong> Your password is verified securely. 
+                    Once verified, you can access this file for 15 minutes without re-entering your password.
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+

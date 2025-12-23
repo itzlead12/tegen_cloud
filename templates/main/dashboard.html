@@ -143,31 +143,41 @@
                     
                     <!-- Recent Activity -->
                     <div class="card recent-activity">
-                        <div class="card-header">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <h3><i class="fas fa-history"></i> Recent Uploads</h3>
+                            <a href="{{ url_for('generate_report') }}" style="background: #fe4d35; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600;">
+                                <i class="fas fa-file-alt"></i> Generate Report
+                            </a>
                         </div>
                         <div class="card-body">
                             {% if evidence_count > 0 %}
                                 {% for evidence in recent_evidence %}
-                                <div class="activity-item">
-                                    <div class="activity-icon">
-                                        {% if evidence[2] == 'image' %}
-                                            <i class="fas fa-image" style="color: #fe4d35;"></i>
-                                        {% elif evidence[2] == 'pdf' %}
-                                            <i class="fas fa-file-pdf" style="color: #fe4d35;"></i>
-                                        {% else %}
-                                            <i class="fas fa-file" style="color: #fe4d35;"></i>
-                                        {% endif %}
+                                <div class="activity-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; gap: 1rem; flex: 1;">
+                                        <div class="activity-icon">
+                                            {% if evidence[2] == 'image' %}
+                                                <i class="fas fa-image" style="color: #fe4d35;"></i>
+                                            {% elif evidence[2] == 'pdf' %}
+                                                <i class="fas fa-file-pdf" style="color: #fe4d35;"></i>
+                                            {% else %}
+                                                <i class="fas fa-file" style="color: #fe4d35;"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="activity-details">
+                                            <h4>{{ evidence[1] }}</h4>
+                                            <p>
+                                                <i class="fas fa-clock"></i> 
+                                                {{ evidence[4] }}
+                                            </p>
+                                            <span class="evidence-type-badge">
+                                                <i class="fas fa-tag"></i> {{ evidence[3] }}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="activity-details">
-                                        <h4>{{ evidence[1] }}</h4>
-                                        <p>
-                                            <i class="fas fa-clock"></i> 
-                                            {{ evidence[4] }}
-                                        </p>
-                                        <span class="evidence-type-badge">
-                                            <i class="fas fa-tag"></i> {{ evidence[3] }}
-                                        </span>
+                                    <div>
+                                        <a href="{{ url_for('view_file', file_id=evidence[0]) }}" style="background: #fe4d35; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600; display: inline-block;">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
                                     </div>
                                 </div>
                                 {% endfor %}
