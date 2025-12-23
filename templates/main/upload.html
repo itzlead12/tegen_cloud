@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Evidence | TEGEN-CLOUD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <style>
+        .upload-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .upload-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #161515;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="file"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #fe4d35;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .file-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .file-upload-area:hover {
+            border-color: #fe4d35;
+            background-color: #fff5f4;
+        }
+        .file-upload-area.dragover {
+            border-color: #fe4d35;
+            background-color: #fff5f4;
+        }
+        .file-upload-icon {
+            font-size: 3rem;
+            color: #fe4d35;
+            margin-bottom: 1rem;
+        }
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f4f4f4;
+            border-radius: 8px;
+            display: none;
+        }
+        .file-info.show {
+            display: block;
+        }
+        .btn-primary {
+            background: #fe4d35;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: #ff3419;
+        }
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #f4f4f4;
+            color: #161515;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        .help-text {
+            font-size: 0.875rem;
+            color: #818080;
+            margin-top: 0.25rem;
+        }
+        .required {
+            color: #fe4d35;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <span class="logo-name">TEGEN-CLOUD</span>
+                    <span class="logo-version">v1.0.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{{ url_for('upload') }}" class="nav-link active">
+                    <i class="fas fa-file-upload"></i> Upload
+                </a>
+                <a href="{{ url_for('observations') }}" class="nav-link">
+                    <i class="fas fa-list"></i> Observations
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <i class="fas fa-cog"></i> Profile
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ username }}</span>
+                    <span class="usercode">{{ user_code }}</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <div class="upload-container">
+            <div class="upload-card">
+                <h2 style="margin-bottom: 2rem; color: #161515;">
+                    <i class="fas fa-file-upload" style="color: #fe4d35;"></i> Upload Evidence
+                </h2>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; background: {% if category == 'error' %}#fee; color: #c33;{% else %}#efe; color: #3c3;{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <div class="form-group">
+                        <label for="evidence_name">
+                            Evidence Name <span class="required">*</span>
+                        </label>
+                        <input type="text" id="evidence_name" name="evidence_name" required 
+                               placeholder="e.g., Screenshot of conversation on March 15">
+                        <div class="help-text">Give your evidence a descriptive name</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="evidence_type">
+                            Evidence Type <span class="required">*</span>
+                        </label>
+                        <select id="evidence_type" name="evidence_type" required>
+                            <option value="">Select type...</option>
+                            <option value="screenshot">Screenshot/Image</option>
+                            <option value="document">PDF Document</option>
+                        </select>
+                        <div class="help-text">Select the type of evidence you're uploading</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observation">
+                            Your Observation
+                        </label>
+                        <textarea id="observation" name="observation" 
+                                  placeholder="Describe what you observed or what this evidence shows..."></textarea>
+                        <div class="help-text">Optional: Add your notes or observations about this evidence</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file">
+                            File <span class="required">*</span>
+                        </label>
+                        <div class="file-upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                            <p style="font-weight: 600; margin-bottom: 0.5rem;">Click to select or drag and drop</p>
+                            <p style="color: #818080; font-size: 0.875rem;">PNG, JPG, JPEG, GIF, or PDF (Max 10MB)</p>
+                            <input type="file" id="file" name="file" required accept=".png,.jpg,.jpeg,.gif,.pdf" 
+                                   style="display: none;">
+                        </div>
+                        <div class="file-info" id="fileInfo">
+                            <i class="fas fa-file"></i> <span id="fileName"></span>
+                            <span id="fileSize" style="float: right;"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <i class="fas fa-upload"></i> Upload Evidence
+                    </button>
+                </form>
+
+                <a href="{{ url_for('dashboard') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('file');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Click to select file
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert('File size exceeds 10MB limit. Please select a smaller file.');
+                    fileInput.value = '';
+                    fileInfo.classList.remove('show');
+                    return;
+                }
+
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.classList.add('show');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        // Form submission
+        uploadForm.addEventListener('submit', (e) => {
+            const file = fileInput.files[0];
+            if (!file) {
+                e.preventDefault();
+                alert('Please select a file to upload');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        });
+    </script>
+</body>
+</html>
+

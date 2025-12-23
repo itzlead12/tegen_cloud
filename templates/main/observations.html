@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observations Dashboard | TEGEN-CLOUD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <style>
+        .observations-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .filters-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #161515;
+            font-size: 0.875rem;
+        }
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #fe4d35;
+        }
+        .btn-filter {
+            background: #fe4d35;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .btn-filter:hover {
+            background: #ff3419;
+        }
+        .btn-clear {
+            background: #f4f4f4;
+            color: #161515;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .timeline {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f4f4f4;
+        }
+        .timeline-header h2 {
+            color: #161515;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-left: 3px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .timeline-item:hover {
+            background: #f8f9fa;
+            border-left-color: #fe4d35;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 1.5rem;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: #fe4d35;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #fe4d35;
+        }
+        .timeline-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .timeline-icon.image {
+            background: #dfbcb7;
+            color: #fe4d35;
+        }
+        .timeline-icon.document {
+            background: #fc6d5a;
+            color: #161515;
+        }
+        .timeline-content {
+            flex: 1;
+        }
+        .timeline-content h3 {
+            color: #161515;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .timeline-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+            color: #818080;
+        }
+        .timeline-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .evidence-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .evidence-type-badge.screenshot {
+            background: #dfbcb7;
+            color: #fe4d35;
+        }
+        .evidence-type-badge.document {
+            background: #fc6d5a;
+            color: #161515;
+        }
+        .observation-text {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #4e4d4d;
+            font-style: italic;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #818080;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TEGEN-CLOUD Logo">
+                <div>
+                    <span class="logo-name">TEGEN-CLOUD</span>
+                    <span class="logo-version">v1.0.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{{ url_for('upload') }}" class="nav-link">
+                    <i class="fas fa-file-upload"></i> Upload
+                </a>
+                <a href="{{ url_for('observations') }}" class="nav-link active">
+                    <i class="fas fa-list"></i> Observations
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <i class="fas fa-cog"></i> Profile
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ username }}</span>
+                    <span class="usercode">{{ user_code }}</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <div class="observations-container">
+            <!-- Filters -->
+            <div class="filters-card">
+                <form method="GET" action="{{ url_for('observations') }}" id="filterForm">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label for="type">Evidence Type</label>
+                            <select id="type" name="type">
+                                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Types</option>
+                                <option value="screenshot" {% if filter_type == 'screenshot' %}selected{% endif %}>Screenshot/Image</option>
+                                <option value="document" {% if filter_type == 'document' %}selected{% endif %}>PDF Document</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" name="date" value="{{ filter_date }}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="name">Evidence Name</label>
+                            <input type="text" id="name" name="name" placeholder="Search by name..." value="{{ filter_name }}">
+                        </div>
+                        <div class="filter-group">
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <a href="{{ url_for('observations') }}" class="btn-clear" style="margin-left: 0.5rem;">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline">
+                <div class="timeline-header">
+                    <h2><i class="fas fa-list" style="color: #fe4d35;"></i> Evidence Timeline</h2>
+                    <p style="color: #818080; margin-top: 0.5rem;">
+                        {{ observations|length }} observation{{ 's' if observations|length != 1 else '' }} found
+                    </p>
+                </div>
+
+                {% if observations %}
+                    {% for obs in observations %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon {{ obs[3] if obs[3] == 'image' else 'document' }}">
+                            {% if obs[3] == 'image' %}
+                                <i class="fas fa-image"></i>
+                            {% else %}
+                                <i class="fas fa-file-pdf"></i>
+                            {% endif %}
+                        </div>
+                        <div class="timeline-content">
+                            <h3>{{ obs[1] }}</h3>
+                            <span class="evidence-type-badge {{ obs[2] }}">
+                                <i class="fas fa-tag"></i> {{ obs[2]|title }}
+                            </span>
+                            <div class="timeline-meta">
+                                <span>
+                                    <i class="fas fa-clock"></i> {{ obs[4] }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-hdd"></i> 
+                                    {% if obs[5] %}
+                                        {% if obs[5] < 1024 %}
+                                            {{ obs[5] }} B
+                                        {% elif obs[5] < 1024 * 1024 %}
+                                            {{ "%.2f"|format(obs[5] / 1024) }} KB
+                                        {% else %}
+                                            {{ "%.2f"|format(obs[5] / (1024 * 1024)) }} MB
+                                        {% endif %}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                                <span>
+                                    <i class="fas fa-fingerprint"></i> {{ obs[0][:12] }}...
+                                </span>
+                            </div>
+                            {% if obs[6] %}
+                            <div class="observation-text">
+                                <i class="fas fa-comment"></i> {{ obs[6] }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No observations found</h3>
+                        <p>{% if filter_type != 'all' or filter_date or filter_name %}Try adjusting your filters{% else %}Upload your first evidence to get started{% endif %}</p>
+                        {% if filter_type == 'all' and not filter_date and not filter_name %}
+                        <a href="{{ url_for('upload') }}" class="btn-small" style="margin-top: 1rem; display: inline-block;">
+                            <i class="fas fa-upload"></i> Upload Evidence
+                        </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Auto-submit on filter change (optional)
+        document.getElementById('filterForm').addEventListener('change', function() {
+            // Uncomment to auto-submit on change
+            // this.submit();
+        });
+    </script>
+</body>
+</html>
+
