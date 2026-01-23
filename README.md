@@ -30,29 +30,23 @@ All designed for real-world legal and digital justice contexts.
 1. **Secure Evidence Upload**
    - Upload screenshots, chats, audio, and PDFs
    - Automatic timestamps & encryption  
-   :contentReference
 
 2. **AI Analysis**
    - Detects harassment, threats, and coercive language
    - Provides severity scoring and explanations  
-   :contentReference
 
 3. **Cryptographic Integrity Ledger**
    - All uploaded data is hashed (e.g., SHA-256)
    - Ensures tamper-evident evidence storage  
-   :contentReference
 
 4. **Visual Evidence Timeline**
    - Shows evidence progression over time  
-   :contentReference
 
 5. **Court-Ready PDF Reports**
    - Professionally formatted downloadable reports  
-   :contentReference
 
 6. **Panic Mode**
-   - One-click disguised interface for privacy  
-   :contentReference
+   - One-click disguised interface for privacy 
 
 ---
 
@@ -100,5 +94,6 @@ It is *not* an emergency response tool — if you are in immediate danger, conta
 Reach out to the developers through your preferred method (social links, email, or GitHub).
 
 ---
+
 
 
