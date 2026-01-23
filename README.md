@@ -2,7 +2,7 @@
 
 **Secure Guidance Cloud for Technology-Facilitated Gender-Based Violence Evidence**
 
-TEGEN-CLOUD is a secure, AI-assisted platform that helps transform fragile digital evidence into verified, court-ready records with strong cryptographic integrity and survivor safety at the core of its design. :contentReference[oaicite:1]{index=1}
+TEGEN-CLOUD is a secure, AI-assisted platform that helps transform fragile digital evidence into verified, court-ready records with strong cryptographic integrity and survivor safety at the core of its design.
 
 ---
 
@@ -21,7 +21,7 @@ TEGEN-CLOUD is a secure, AI-assisted platform that helps transform fragile digit
 - **Court-ready reports** with cryptographic proofs  
 - **Timeline views of evidence**  
 - **Panic mode** for instant privacy  
-All designed for real-world legal and digital justice contexts. :contentReference[oaicite:2]{index=2}
+All designed for real-world legal and digital justice contexts.
 
 ---
 
@@ -30,29 +30,29 @@ All designed for real-world legal and digital justice contexts. :contentReferenc
 1. **Secure Evidence Upload**
    - Upload screenshots, chats, audio, and PDFs
    - Automatic timestamps & encryption  
-   :contentReference[oaicite:3]{index=3}
+   :contentReference
 
 2. **AI Analysis**
    - Detects harassment, threats, and coercive language
    - Provides severity scoring and explanations  
-   :contentReference[oaicite:4]{index=4}
+   :contentReference
 
 3. **Cryptographic Integrity Ledger**
    - All uploaded data is hashed (e.g., SHA-256)
    - Ensures tamper-evident evidence storage  
-   :contentReference[oaicite:5]{index=5}
+   :contentReference
 
 4. **Visual Evidence Timeline**
    - Shows evidence progression over time  
-   :contentReference[oaicite:6]{index=6}
+   :contentReference
 
 5. **Court-Ready PDF Reports**
    - Professionally formatted downloadable reports  
-   :contentReference[oaicite:7]{index=7}
+   :contentReference
 
 6. **Panic Mode**
    - One-click disguised interface for privacy  
-   :contentReference[oaicite:8]{index=8}
+   :contentReference
 
 ---
 
@@ -62,7 +62,7 @@ Based on the homepage details and hosting:
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Python with **Flask**  
 - **Database:** SQLite  
-- **Hosting:** PythonAnywhere :contentReference[oaicite:9]{index=9}
+- **Hosting:** PythonAnywhere
 
 ---
 
@@ -76,7 +76,7 @@ Based on the homepage details and hosting:
    Navigate through the Home, About, Features, and Developers sections.
 
 3. **Login / Register**  
-   Click **Login** or **Get Started** to access secure upload and dashboard pages. :contentReference[oaicite:10]{index=10}
+   Click **Login** or **Get Started** to access secure upload and dashboard pages.
 
 ---
 
@@ -84,20 +84,14 @@ Based on the homepage details and hosting:
 
 **Haileab Mulugeta** — Frontend Developer & Encryption Specialist  
 **Paulos Beirhun** — Backend Developer & System Security Architect  
-*(Profiles listed on the website)* :contentReference[oaicite:11]{index=11}
+*(Profiles listed on the website)*
 
 ---
 
 ## 🛡️ Security & Disclaimer
 
 TEGEN-CLOUD is meant for **preserving digital evidence securely**.  
-It is *not* an emergency response tool — if you are in immediate danger, contact appropriate local authorities and support services. :contentReference[oaicite:12]{index=12}
-
----
-
-## 📄 License
-
-Add your chosen license here (e.g., **MIT License**) if you plan to make code public.
+It is *not* an emergency response tool — if you are in immediate danger, contact appropriate local authorities and support services.
 
 ---
 
@@ -106,4 +100,5 @@ Add your chosen license here (e.g., **MIT License**) if you plan to make code pu
 Reach out to the developers through your preferred method (social links, email, or GitHub).
 
 ---
+
 
